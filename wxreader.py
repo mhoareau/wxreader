@@ -35,7 +35,7 @@ def main():
 
 def getweatherpacket():
     #MySQL String
-    cnx = mysql.connector.connect(user='weewx', database='weewx', host='ipa', password='w3ather99!')
+    cnx = mysql.connector.connect(user='weewx', database='weewx', host='ipa', password='')
     cursor = cnx.cursor()
     sqlstring = "select outTemp, windSpeed, windGust, windDir, rainRate, rain, outHumidity, barometer, pressure from archive order by dateTime desc limit 1;"
     #Replace with mysql command to get latest weather
