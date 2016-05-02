@@ -8,12 +8,10 @@ import mysql.connector
 
 def main():
     #Xastir client ip address
-    xastir_addr = ('192.168.1.1', 8888)
+    xastir_addr = ('192.168.1.11', 8888)
     # Create a TCP/IP socket
     #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    cnx = mysql.connector.connect(user='weewx', database='weewx', host='ipa', password='xxxxxx')
-    cursor = cnx.cursor()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
     # Bind the socket to the port
     server_address = ('localhost', 8888)
     print >>sys.stderr, 'starting up on %s port %s' % server_address
@@ -23,8 +21,8 @@ def main():
     data = connection.recv(4096)
     print >>sys.stderr, 'received "%s"' % data
     while True:
-        print "Sending output"
-        data = getweatherpacket(cursor)
+        #print "Sending output"
+        data = getweatherpacket()
         
         print ("Waiting to receive")
         #data, server = sock.recvfrom(4096)
@@ -35,8 +33,10 @@ def main():
         time.sleep(5) 
         
 
-def getweatherpacket(cursor):
+def getweatherpacket():
     #MySQL String
+    cnx = mysql.connector.connect(user='weewx', database='weewx', host='ipa', password='w3ather99!')
+    cursor = cnx.cursor()
     sqlstring = "select outTemp, windSpeed, windGust, windDir, rainRate, rain, outHumidity, barometer, pressure from archive order by dateTime desc limit 1;"
     #Replace with mysql command to get latest weather
     #Format:
@@ -69,7 +69,8 @@ def getweatherpacket(cursor):
     wxstring = wxstring + " " + '{:02.2f}'.format(row[5]) #rain
     wxstring = wxstring + " 6.0 5.0 " + '{:03.3f}'.format(row[6]) #outHumidity
     wxstring = wxstring + " 1.0 1.0 " + '{:03.3f}'.format(row[7]) #RHmax (unused), rhmin(unused), barometer    print ("sending %s" % wxstring)
-    wxstring = wxstring + "1.0 1.0 1.0 1.0 1.0 1.0 1.0\r\n"
+    wxstring = wxstring + " 1.0 1.0 1.0 1.0 1.0 1.0 1.0\r\n"
+    cursor.close()
     return wxstring
 
 
