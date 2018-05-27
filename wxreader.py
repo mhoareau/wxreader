@@ -54,7 +54,11 @@ def getweatherpacket():
     row = cursor.fetchone()
     
     # Modified by Mickael Hoareau for Enzo Becamel
-    sql_rain = "select sum from archive_day_rain order by dateTime desc limit 1;"
+    #sql_rain = "select sum from archive_day_rain order by dateTime desc limit 1;"
+    from datetime import datetime, date, time
+    today_beginning = datetime.combine(date.today(), time())
+    
+    sql_rain = "SELECT SUM(rain) FROM archive WHERE dateTime >= %s;" % today_beginning.strftime('%s')
     cursor.execute(sql_rain)
     row_rain = cursor.fetchone()
     rain = float(row_rain[0]*25.4) # convert inches to mm
@@ -73,8 +77,8 @@ def getweatherpacket():
         winddir = int((row[3]/22.5)+.5)
     wxstring = wxstring + " 0.0 " + str(winddir) #maxspeed (unused), bearing
     wxstring = wxstring + " 1 " # max_dir (unused)
-    wxstring = wxstring + '{:03.3f}'.format(rain) # rainrate
-    wxstring = wxstring + " " + '{:02.2f}'.format(row[4]) #rain
+    wxstring = wxstring + '{:03.3f}'.format(row[4]) # rainrate
+    wxstring = wxstring + " " + '{:02.2f}'.format(rain) #rain
     wxstring = wxstring + " 6.0 5.0 " + '{:03.3f}'.format(row[6]) #outHumidity
     wxstring = wxstring + " 1.0 1.0 " + '{:03.3f}'.format(row[7]) #RHmax (unused), rhmin(unused), barometer    print ("sending %s" % wxstring)
     wxstring = wxstring + " 1.0 1.0 1.0 1.0 1.0 1.0 1.0\r\n"
