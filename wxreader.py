@@ -57,6 +57,7 @@ def getweatherpacket():
     sql_rain = "select sum from archive_day_rain order by dateTime desc limit 1;"
     cursor.execute(sql_rain)
     row_rain = cursor.fetchone()
+    rain = float(row_rain[0]*10) # convert cm to mm
     
     #print (row)
     temp = (row[0]-32)*5/9
@@ -72,7 +73,7 @@ def getweatherpacket():
         winddir = int((row[3]/22.5)+.5)
     wxstring = wxstring + " 0.0 " + str(winddir) #maxspeed (unused), bearing
     wxstring = wxstring + " 1 " + '{:03.3f}'.format(row[4]) #max_dir (unused), rainrate
-    wxstring = wxstring + " " + '{:02.2f}'.format(row_rain[0]*10) #rain
+    wxstring = wxstring + " " + '{:02.2f}'.format(rain) #rain
     wxstring = wxstring + " 6.0 5.0 " + '{:03.3f}'.format(row[6]) #outHumidity
     wxstring = wxstring + " 1.0 1.0 " + '{:03.3f}'.format(row[7]) #RHmax (unused), rhmin(unused), barometer    print ("sending %s" % wxstring)
     wxstring = wxstring + " 1.0 1.0 1.0 1.0 1.0 1.0 1.0\r\n"
